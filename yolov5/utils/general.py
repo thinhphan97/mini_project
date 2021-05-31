@@ -21,9 +21,9 @@ import torch
 import torchvision
 import yaml
 
-from utils.google_utils import gsutil_getsize
-from utils.metrics import fitness
-from utils.torch_utils import init_torch_seeds
+from yolov5.utils.google_utils import gsutil_getsize
+from yolov5.utils.metrics import fitness
+from yolov5.utils.torch_utils import init_torch_seeds
 
 # Settings
 torch.set_printoptions(linewidth=320, precision=5, profile='long')
@@ -57,13 +57,13 @@ def is_docker():
     return Path('/workspace').exists()  # or Path('/.dockerenv').exists()
 
 
-def is_colab():
-    # Is environment a Google Colab instance
-    try:
-        import google.colab
-        return True
-    except Exception as e:
-        return False
+# def is_colab():
+#     # Is environment a Google Colab instance
+#     try:
+#         import google.colab
+#         return True
+#     except Exception as e:
+#         return False
 
 
 def emojis(str=''):
@@ -158,7 +158,7 @@ def check_imshow():
     # Check if environment supports image displays
     try:
         assert not is_docker(), 'cv2.imshow() is disabled in Docker environments'
-        assert not is_colab(), 'cv2.imshow() is disabled in Google Colab environments'
+        # assert not is_colab(), 'cv2.imshow() is disabled in Google Colab environments'
         cv2.imshow('test', np.zeros((1, 1, 3)))
         cv2.waitKey(1)
         cv2.destroyAllWindows()
