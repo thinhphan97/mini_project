@@ -9,7 +9,7 @@ import torch
 import yaml
 from tqdm import tqdm
 
-from models.experimental import attempt_load
+from yolov5.models.experimental import attempt_load
 from yolov5.utils.datasets import create_dataloader
 from yolov5.utils.general import coco80_to_coco91_class, check_dataset, check_file, check_img_size, check_requirements, \
     box_iou, non_max_suppression, scale_coords, xyxy2xywh, xywh2xyxy, set_logging, increment_path, colorstr
@@ -285,8 +285,7 @@ def test(data,
         maps[c] = ap[i]
     return (mp, mr, map50, map, *(loss.cpu() / len(dataloader)).tolist()), maps, t
 
-
-if __name__ == '__main__':
+def main(cfglist):
     parser = argparse.ArgumentParser(prog='test.py')
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
     parser.add_argument('--data', type=str, default='data/coco128.yaml', help='*.data path')
@@ -306,7 +305,7 @@ if __name__ == '__main__':
     parser.add_argument('--project', default='runs/test', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    opt = parser.parse_args()
+    opt = parser.parse_args(cfglist)
     opt.save_json |= opt.data.endswith('coco.yaml')
     opt.data = check_file(opt.data)  # check file
     print(opt)
@@ -347,3 +346,8 @@ if __name__ == '__main__':
             np.savetxt(f, y, fmt='%10.4g')  # save
         os.system('zip -r study.zip study_*.txt')
         plot_study_txt(x=x)  # plot
+
+
+if __name__ == '__main__':
+    cfglist = ["--data coco.yaml", '--conf-thres 0.7','--iou 0.7', "--weights yolov5s.pt"]
+    main(cfglist)
