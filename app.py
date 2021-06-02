@@ -1,16 +1,17 @@
+from PIL import Image
 from flask import Flask, render_template, request
-import numpy
+import numpy as np
 import cv2
 import os
 import base64
+from TwoClassClassifier import predict
 
-#LEAF_FOLDER = os.path.join('static', 'leaf_photo')
+from efficientnet_pytorch import EfficientNet
+
 
 app = Flask(__name__)
-#app.config['UPLOAD_FOLDER'] = LEAF_FOLDER
 app.config['TESTING'] = True
 
-# from Inference import get_plant_disease, background_removal, object_detection
 
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
@@ -25,22 +26,20 @@ def hello_world():
             #read image file string data
             filestr = file.read()
             #convert string data to numpy array
-            npimg = numpy.fromstring(filestr, numpy.uint8)
+            npimg = np.fromstring(filestr, np.uint8)
             # convert numpy array to image
-            img = cv2.imdecode(npimg,cv2.IMREAD_COLOR)
-            valid=0
-            img, valid = object_detection(image_bytes=img,val=valid)
-            #cv2.imwrite('static/leaf_photo/leaf_image.png',img)
-            if (valid==1):
-                retval, buffer_img= cv2.imencode('.jpg', img)
-                data = base64.b64encode(buffer_img).decode('utf-8')
-                return render_template('result.html', leaf_image=data)
-            else:
-                return render_template('wrong_image.html')
+
+            # img = cv2.imdecode(npimg,cv2.IMREAD_COLOR) # Using cv2 library
+            img = Image.fromarray(npimg).convert('RGB') # Using PIL library
+            probabilities = 0
+
+            name, probabilities = predict(model_name='efficientnet_b2_pruned', weights_path="model_step1.pth", image = img)
+            cv2.imwrite('static/leaf_photo/leaf_image.png',img)
             #base64 encoding for displaying image on webpage
             retval, buffer_img= cv2.imencode('.jpg', img)
             data = base64.b64encode(buffer_img).decode('utf-8')
+            return render_template('result.html', imagebase64=data, name=name, probabilities=probabilities)
             
 
 if __name__ == '__main__':
-    app.run(debug=True,port=os.getenv('PORT',5000))
+    app.run(debug=False, port=os.getenv('PORT',5000))
