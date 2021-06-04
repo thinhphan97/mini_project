@@ -1,12 +1,10 @@
 from PIL import Image
 from flask import Flask, render_template, request
 import numpy as np
-import cv2
-import os
 import base64
-from TwoClassClassifier import predict
-
-from efficientnet_pytorch import EfficientNet
+from TwoClassClassifier import predict, img_to_base64_str
+import base64
+from io import BytesIO
 
 
 app = Flask(__name__)
@@ -32,14 +30,17 @@ def hello_world():
             # img = cv2.imdecode(npimg,cv2.IMREAD_COLOR) # Using cv2 library
             img = Image.fromarray(npimg).convert('RGB') # Using PIL library
             probabilities = 0
-
+            print('Image have been uploaded!')
             name, probabilities = predict(model_name='efficientnet_b2_pruned', weights_path="model_step1.pth", image = img)
-            cv2.imwrite('static/leaf_photo/leaf_image.png',img)
+
             #base64 encoding for displaying image on webpage
-            retval, buffer_img= cv2.imencode('.jpg', img)
-            data = base64.b64encode(buffer_img).decode('utf-8')
-            return render_template('result.html', imagebase64=data, name=name, probabilities=probabilities)
+            
+            # img = img_to_base64_str(img)
+            print('name = ', name, '\t', 'probabilities = ', probabilities)
+            # retval, buffer_img= cv2.imencode('.jpg', img)
+            # data = base64.b64encode(img).decode('utf-8')
+            return render_template('result.html', imagebase64=img, name=name, probability=probabilities)
             
 
 if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv('PORT',5000))
+    app.run(debug=True, port=5000)
