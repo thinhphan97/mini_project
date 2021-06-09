@@ -40,7 +40,7 @@ def hello_world():
                 data = base64.b64encode(buffer_img).decode('utf-8')
                 return render_template('result.html', imagebase64=data, name=name, probability=probabilities)
             else :
-                image_pred, names = detect(opencvImage, weights="best.pt", img_size=640)
+                image_pred, names = detect(opencvImage, weights="best.pt", img_size=640, augment=True)
                 #base64 encoding for displaying image on webpage
                 for i in names:
                     print("-->", i)
