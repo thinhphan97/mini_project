@@ -16,7 +16,17 @@ def detect( source = None, weights = "", img_size = 640, no_save = False,
             projects = "runs/detect", device = '', name ='exp', conf_thres = 0.25, 
             augment = False, agnostic_nms = False, iou_thres = 0.45, 
             line_thickness = 3):
-
+    """
+    This is the detect method.
+    Input:  source -> input image (numpy array/opencv format).
+            weight -> Path to weight file (*.pt).
+            img_size -> Image size, default = 640. Must be divisible by 32.
+            devide -> Select device to running detect method 'cpu' or 'cuda'.
+            augment -> Choose to using or not using augment when detect.
+            conf_thres -> confident threshold.
+            iou_thres -> IoU threshold. 
+    Output: Return to a base64 image and a list of prediction and bbox. 
+    """
     # Initialize
     set_logging()
     device = select_device(device)
@@ -112,3 +122,4 @@ def detect( source = None, weights = "", img_size = 640, no_save = False,
 #     print(i)
 # cv2.imshow('ImageWindow', image)
 # cv2.waitKey()
+    
